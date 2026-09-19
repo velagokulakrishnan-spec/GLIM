@@ -1,0 +1,8 @@
+/* Glim host element — full-screen fixed overlay, no pointer events by default */
+#glim-extension-host {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}

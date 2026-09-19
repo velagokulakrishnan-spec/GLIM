@@ -1,0 +1,402 @@
+<!-- Glim Sidebar — HTML Template (loaded into Shadow DOM by content.js) -->
+
+<!-- ── Floating toggle button ──────────────────────────────────────────────── -->
+<button id="glim-toggle" title="Open Glim" aria-label="Open Glim">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+    <path d="M12 2 13.9 9.1C14.15 10.1 14.9 10.85 15.9 11.1L23 13 15.9 14.9C14.9 15.15 14.15 15.9 13.9 16.9L12 24 10.1 16.9C9.85 15.9 9.1 15.15 8.1 14.9L1 13 8.1 11.1C9.1 10.85 9.85 10.1 10.1 9.1Z"/>
+  </svg>
+</button>
+
+<!-- ── Sidebar panel ────────────────────────────────────────────────────────── -->
+<div id="glim-sidebar" role="complementary" aria-label="Glim AI Assistant">
+
+  <!-- Header / drag handle -->
+  <header id="glim-header">
+    <div class="glim-logo" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+        <path d="M12 2 13.9 9.1C14.15 10.1 14.9 10.85 15.9 11.1L23 13 15.9 14.9C14.9 15.15 14.15 15.9 13.9 16.9L12 24 10.1 16.9C9.85 15.9 9.1 15.15 8.1 14.9L1 13 8.1 11.1C9.1 10.85 9.85 10.1 10.1 9.1Z"/>
+      </svg>
+    </div>
+    <div class="glim-brand">
+      <span class="glim-name">Glim</span>
+      <div class="glim-status-row">
+        <span id="glim-status" class="glim-status">Ready</span>
+        <!-- Sound wave — shown while speaking -->
+        <div id="glim-wave" class="glim-wave" hidden aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    <div class="glim-hbtns" aria-label="Sidebar controls">
+      <!-- Voice mute toggle -->
+      <button class="glim-hbtn" id="glim-voice-btn" title="Mute / unmute voice" aria-label="Toggle voice output">
+        <svg id="glim-voice-on-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+        <svg id="glim-voice-off-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+      </button>
+      <!-- Settings -->
+      <button class="glim-hbtn" id="glim-settings-btn" title="Settings" aria-label="Open settings">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+      <!-- New chat -->
+      <button class="glim-hbtn" id="glim-new-btn" title="New chat" aria-label="Start new chat">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+      <!-- Minimise -->
+      <button class="glim-hbtn" id="glim-minimize-btn" title="Minimise" aria-label="Minimise sidebar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+      <!-- Close -->
+      <button class="glim-hbtn glim-close-x" id="glim-close-btn" title="Close (Esc)" aria-label="Close Glim">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Chat view ───────────────────────────────────────────────────────────── -->
+  <div id="glim-chat-view" class="glim-view">
+    <div id="glim-messages" class="glim-messages" role="log" aria-live="polite" aria-label="Chat messages">
+
+      <!-- Empty / welcome state -->
+      <div id="glim-empty" class="glim-empty">
+        <div class="glim-empty-glow" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="#3b82f6">
+            <path d="M12 2 13.9 9.1C14.15 10.1 14.9 10.85 15.9 11.1L23 13 15.9 14.9C14.9 15.15 14.15 15.9 13.9 16.9L12 24 10.1 16.9C9.85 15.9 9.1 15.15 8.1 14.9L1 13 8.1 11.1C9.1 10.85 9.85 10.1 10.1 9.1Z"/>
+          </svg>
+        </div>
+        <h2 class="glim-empty-title">Hi, I'm Glim</h2>
+        <p class="glim-empty-desc">Your AI browser assistant. I can see your screen and help you with anything on this page.</p>
+        <div class="glim-chips" role="list">
+          <button class="glim-chip" role="listitem">📸 What's on this page?</button>
+          <button class="glim-chip" role="listitem">💬 Summarise this for me</button>
+          <button class="glim-chip" role="listitem">📁 Analyse an image or PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Settings view ──────────────────────────────────────────────────────── -->
+  <div id="glim-settings-view" class="glim-view" hidden>
+    <div class="glim-settings-inner">
+
+      <div class="glim-settings-logo" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+          <path d="M12 2 13.9 9.1C14.15 10.1 14.9 10.85 15.9 11.1L23 13 15.9 14.9C14.9 15.15 14.15 15.9 13.9 16.9L12 24 10.1 16.9C9.85 15.9 9.1 15.15 8.1 14.9L1 13 8.1 11.1C9.1 10.85 9.85 10.1 10.1 9.1Z"/>
+        </svg>
+      </div>
+
+      <h3 class="glim-settings-title">Settings</h3>
+
+      <!-- ── Anthropic ────────────────────────────────────────────────────── -->
+      <div class="glim-settings-section">
+        <div class="glim-section-hd">Claude (required)</div>
+        <div class="glim-settings-status">
+          <div id="glim-sdot" class="glim-sdot"></div>
+          <span id="glim-stext">No API key set</span>
+        </div>
+        <div class="glim-field">
+          <label class="glim-label" for="glim-api-input">Anthropic API Key</label>
+          <div class="glim-input-wrap">
+            <input id="glim-api-input" class="glim-text-input" type="password"
+                   placeholder="sk-ant-api…" autocomplete="off" spellcheck="false">
+            <button id="glim-eye-btn" class="glim-eye-btn" type="button"
+                    title="Show / hide key" aria-label="Toggle key visibility">
+              <svg id="glim-eye-show" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg id="glim-eye-hide" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <a href="https://console.anthropic.com/settings/keys"
+           target="_blank" rel="noopener" class="glim-key-link">
+          Get a Claude key →
+        </a>
+      </div>
+
+      <!-- ── ElevenLabs ──────────────────────────────────────────────────── -->
+      <div class="glim-settings-section">
+        <div class="glim-section-hd">ElevenLabs Voice <span class="glim-optional">optional</span></div>
+        <div class="glim-section-hint">Premium AI voice. Falls back to Web Speech if not set.</div>
+
+        <div class="glim-field">
+          <label class="glim-label" for="glim-el-key-input">ElevenLabs API Key</label>
+          <div class="glim-input-wrap">
+            <input id="glim-el-key-input" class="glim-text-input" type="password"
+                   placeholder="xi-api-key…" autocomplete="off" spellcheck="false">
+            <button id="glim-el-eye-btn" class="glim-eye-btn" type="button"
+                    title="Show / hide key" aria-label="Toggle ElevenLabs key visibility">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 6 voice cards — populated by JS -->
+        <div id="glim-el-voices" class="glim-el-voices" role="radiogroup" aria-label="ElevenLabs voice"></div>
+
+        <a href="https://elevenlabs.io/api" target="_blank" rel="noopener" class="glim-key-link">
+          Get an ElevenLabs key →
+        </a>
+      </div>
+
+      <!-- ── Behaviour toggles ───────────────────────────────────────────── -->
+      <div class="glim-settings-section">
+        <div class="glim-section-hd">Behaviour</div>
+
+        <div class="glim-toggle-row">
+          <div>
+            <div class="glim-toggle-label">Voice responses</div>
+            <div class="glim-toggle-hint">Glim speaks its answers aloud</div>
+          </div>
+          <button id="glim-voice-toggle" class="glim-switch"
+                  role="switch" aria-checked="true"></button>
+        </div>
+
+        <div class="glim-toggle-row">
+          <div>
+            <div class="glim-toggle-label">Wake word</div>
+            <div class="glim-toggle-hint">Say "Hey Glim" to open and listen</div>
+          </div>
+          <button id="glim-wake-toggle" class="glim-switch"
+                  role="switch" aria-checked="false"></button>
+        </div>
+      </div>
+
+      <!-- ── Web Speech fallback style ──────────────────────────────────── -->
+      <div class="glim-settings-section">
+        <div class="glim-section-hd">Web Speech Style <span class="glim-optional">fallback</span></div>
+        <div class="glim-section-hint">Used when ElevenLabs is not set.</div>
+        <div id="glim-voice-cards" class="glim-voice-cards" role="radiogroup" aria-label="Voice style"></div>
+      </div>
+
+      <!-- ── Theme picker + colour pickers ────────────────────────────── -->
+      <div class="glim-settings-section">
+        <div class="glim-section-hd">Make Glim Yours</div>
+
+        <!-- Preset theme cards (rendered by JS) -->
+        <div id="glim-theme-cards" class="glim-theme-cards"
+             role="radiogroup" aria-label="Choose a colour theme"></div>
+
+        <!-- Fine-tune colour pickers -->
+        <div class="glim-color-pickers">
+
+          <div class="glim-cpick-row">
+            <span class="glim-cpick-label">Background</span>
+            <div class="glim-cpick-right">
+              <span class="glim-cpick-hex" id="glim-cpick-bg-hex">#07091a</span>
+              <input type="color" id="glim-cpick-bg"
+                     class="glim-cpick-input" value="#07091a">
+            </div>
+          </div>
+
+          <div class="glim-cpick-row">
+            <span class="glim-cpick-label">Accent</span>
+            <div class="glim-cpick-right">
+              <span class="glim-cpick-hex" id="glim-cpick-accent-hex">#3b82f6</span>
+              <input type="color" id="glim-cpick-accent"
+                     class="glim-cpick-input" value="#3b82f6">
+            </div>
+          </div>
+
+          <div class="glim-cpick-row">
+            <span class="glim-cpick-label">Text</span>
+            <div class="glim-cpick-right">
+              <span class="glim-cpick-hex" id="glim-cpick-text-hex">#e2e8f4</span>
+              <input type="color" id="glim-cpick-text"
+                     class="glim-cpick-input" value="#e2e8f4">
+            </div>
+          </div>
+
+          <div class="glim-cpick-row">
+            <span class="glim-cpick-label">Chat Bubble</span>
+            <div class="glim-cpick-right">
+              <span class="glim-cpick-hex" id="glim-cpick-bubble-hex">#131929</span>
+              <input type="color" id="glim-cpick-bubble"
+                     class="glim-cpick-input" value="#131929">
+            </div>
+          </div>
+
+        </div>
+
+        <button id="glim-color-reset" class="glim-color-reset-btn">
+          ↺ Reset to Dark Navy
+        </button>
+
+      </div>
+
+      <button id="glim-save-btn" class="glim-save-btn">Save &amp; Start Chatting</button>
+
+      <div class="glim-divider"></div>
+
+      <button id="glim-clear-btn" class="glim-danger-btn">
+        Clear Chat History
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ── Input area ──────────────────────────────────────────────────────────── -->
+  <footer id="glim-input-area" class="glim-input-area">
+
+    <!-- API key warning -->
+    <div id="glim-api-warn" class="glim-api-warn" hidden>
+      ⚠&nbsp;No API key set.
+      <button id="glim-warn-btn" type="button">Open Settings →</button>
+    </div>
+
+    <!-- File / screenshot preview -->
+    <div id="glim-file-preview" class="glim-file-preview" hidden>
+      <img id="glim-preview-img" class="glim-preview-img" src="" alt="" style="display:none">
+      <div id="glim-preview-doc" class="glim-preview-doc" style="display:none">
+        <span id="glim-preview-doc-icon" class="glim-preview-doc-icon"></span>
+        <span id="glim-preview-doc-name" class="glim-preview-doc-name"></span>
+      </div>
+      <span id="glim-preview-lbl" class="glim-preview-lbl"></span>
+      <button id="glim-preview-rm" class="glim-preview-rm"
+              title="Remove" aria-label="Remove attachment">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Live voice transcript -->
+    <div id="glim-transcript" class="glim-transcript" hidden>
+      <span id="glim-transcript-text" class="glim-transcript-text"></span>
+      <button id="glim-retry-btn" class="glim-retry-btn" type="button" hidden>↺ Try again</button>
+    </div>
+
+    <!-- Input row -->
+    <div class="glim-row">
+      <input type="file" id="glim-file-input"
+             accept="image/*,.pdf,.doc,.docx,.txt,.csv,.md"
+             style="display:none" aria-hidden="true">
+
+      <button class="glim-ibtn" id="glim-file-btn" title="Upload file" aria-label="Upload file">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </button>
+
+      <button class="glim-ibtn" id="glim-cam-btn" title="Capture screenshot" aria-label="Take screenshot">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+      </button>
+
+      <textarea id="glim-textarea" class="glim-textarea"
+                placeholder="Ask Glim anything…"
+                rows="1" aria-label="Your message"></textarea>
+
+      <button class="glim-ibtn" id="glim-mic-btn" title="Voice input" aria-label="Start voice input">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </button>
+
+      <button class="glim-send" id="glim-send-btn"
+              title="Send (Enter)" aria-label="Send message" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+
+    <p class="glim-hint-text">Enter to send · Shift+Enter for newline · screenshots every message</p>
+  </footer>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     SCREENSHOT CROP + ANNOTATE OVERLAY
+     Sits at root level of the Shadow DOM, covers the full viewport.
+══════════════════════════════════════════════════════════════════════ -->
+<div id="glim-crop-overlay" hidden>
+
+  <!-- Full-resolution screenshot scaled to fill viewport -->
+  <img id="glim-crop-bg" alt="" draggable="false">
+
+  <!-- Canvas: vignette · selection · handles · annotations -->
+  <canvas id="glim-crop-canvas"></canvas>
+
+  <!-- Phase hint — floats top-centre -->
+  <div id="glim-crop-hint" class="glim-crop-hint" role="status">
+    Drag to select an area
+  </div>
+
+  <!-- Annotation toolbar (annotate phase only) -->
+  <div id="glim-annot-bar" class="glim-annot-bar" hidden>
+    <span class="glim-annot-label">Annotate:</span>
+
+    <button class="glim-annot-btn active" data-tool="circle"
+            id="glim-annot-circle" title="Red circle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+           stroke="#ef4444" stroke-width="2.8"><circle cx="12" cy="12" r="9"/></svg>
+    </button>
+
+    <button class="glim-annot-btn" data-tool="highlight"
+            id="glim-annot-highlight" title="Yellow highlight">
+      <svg width="14" height="14" viewBox="0 0 24 24">
+        <rect x="2" y="8" width="20" height="8" rx="2" fill="#fbbf24" opacity=".8"/>
+      </svg>
+    </button>
+
+    <button class="glim-annot-btn" data-tool="arrow"
+            id="glim-annot-arrow" title="Arrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+           stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="19" x2="19" y2="5"/>
+        <polyline points="10 5 19 5 19 14"/>
+      </svg>
+    </button>
+
+    <div class="glim-annot-sep"></div>
+
+    <button class="glim-annot-btn" id="glim-annot-undo" title="Undo last annotation">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M3 7v6h6"/><path d="M3 13A9 9 0 1 0 6 6.7L3 7"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Bottom action bar -->
+  <div class="glim-crop-bar">
+    <button id="glim-crop-cancel" class="glim-cbtn glim-cbtn-ghost">✕ Cancel</button>
+    <button id="glim-crop-retake" class="glim-cbtn glim-cbtn-dim">↺ Retake</button>
+    <div class="glim-cbtn-group">
+      <button id="glim-crop-full"    class="glim-cbtn glim-cbtn-dim">Send Full Page</button>
+      <button id="glim-crop-confirm" class="glim-cbtn glim-cbtn-primary" disabled>
+        ✓ Crop &amp; Use
+      </button>
+    </div>
+  </div>
+
+</div>

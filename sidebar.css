@@ -1,0 +1,1286 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Glim Sidebar — Premium Dark Theme
+   Background #07091a · Sky blue #3b82f6 · Violet #7c3aed
+═══════════════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:host {
+  /* Colours */
+  --bg:     #07091a;
+  --s1:     #0d1126;
+  --s2:     #131929;
+  --s3:     #1a2236;
+  --s4:     #212c42;
+  --border: #1e293b;
+  --bord2:  #2d3e57;
+
+  --blue:   #3b82f6;
+  --violet: #7c3aed;
+  --grad:   linear-gradient(135deg, #3b82f6, #7c3aed);
+  --bg-b:   rgba(59,130,246,.14);
+  --bg-v:   rgba(124,58,237,.14);
+
+  --text:   #e2e8f4;
+  --text2:  #8b9ab5;
+  --text3:  #4f6280;
+  --green:  #34d399;
+  --red:    #f87171;
+  --amber:  #fbbf24;
+
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', Consolas, monospace;
+  --r: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FLOATING TOGGLE BUTTON
+═══════════════════════════════════════════════════════════════ */
+#glim-toggle {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: var(--grad);
+  border: none;
+  cursor: grab;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow:
+    0 0 0 1px rgba(59,130,246,.25),
+    0 4px 24px rgba(59,130,246,.35),
+    0 8px 32px rgba(0,0,0,.4);
+  transition: box-shadow .2s ease, opacity .2s ease, transform .2s ease;
+  z-index: 2147483647;
+  touch-action: none;
+  user-select: none;
+  pointer-events: auto;
+}
+#glim-toggle:hover {
+  box-shadow:
+    0 0 0 1px rgba(124,58,237,.3),
+    0 6px 32px rgba(124,58,237,.45),
+    0 8px 32px rgba(0,0,0,.4);
+}
+#glim-toggle.hidden     { opacity: 0; pointer-events: none; transform: scale(.8); }
+#glim-toggle.dragging   { cursor: grabbing; transition: none; }
+#glim-toggle.positioned { bottom: auto; right: auto; }
+
+/* Wake-word visual states */
+#glim-toggle.wake-listen { animation: glim-breathe 2.5s ease-in-out infinite; }
+#glim-toggle.wake-cmd    { animation: glim-ring .8s ease-out infinite; }
+
+@keyframes glim-breathe {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(59,130,246,.25), 0 4px 24px rgba(59,130,246,.35), 0 0 0 0 rgba(59,130,246,.1) }
+  50%      { box-shadow: 0 0 0 1px rgba(59,130,246,.35), 0 6px 32px rgba(59,130,246,.5), 0 0 0 14px rgba(59,130,246,.04) }
+}
+@keyframes glim-ring {
+  0%   { box-shadow: 0 4px 24px rgba(59,130,246,.5), 0 0 0 0 rgba(59,130,246,.8) }
+  100% { box-shadow: 0 4px 24px rgba(59,130,246,.5), 0 0 0 26px rgba(59,130,246,0) }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR PANEL (floating card)
+═══════════════════════════════════════════════════════════════ */
+#glim-sidebar {
+  position: fixed;
+  top: 16px; right: 16px;
+  width: 360px;
+  height: calc(100vh - 32px);
+  max-height: 760px;
+  min-height: 460px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  display: flex; flex-direction: column;
+  /* Closed state */
+  opacity: 0;
+  transform: translateY(10px) scale(.98);
+  transform-origin: top right;
+  pointer-events: none;
+  transition:
+    opacity .22s cubic-bezier(.4,0,.2,1),
+    transform .22s cubic-bezier(.4,0,.2,1);
+  z-index: 2147483646;
+  overflow: hidden;
+  font-family: var(--font);
+  color: var(--text);
+  font-size: 14px;
+}
+#glim-sidebar.open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  box-shadow:
+    0 32px 80px rgba(0,0,0,.65),
+    0 0 0 1px rgba(59,130,246,.1),
+    0 2px 8px rgba(0,0,0,.3);
+}
+/* Dragged position: right/bottom anchors cleared, inline left/top used instead */
+#glim-sidebar.positioned { right: auto; bottom: auto; }
+#glim-sidebar.dragging   { transition: none; }
+#glim-sidebar.drag-snap {
+  transition:
+    left .3s cubic-bezier(.4,0,.2,1),
+    top  .3s cubic-bezier(.4,0,.2,1);
+}
+
+@media (max-width: 767px) {
+  #glim-sidebar {
+    width: calc(100vw - 20px);
+    top: 10px; right: 10px;
+    height: calc(100vh - 20px);
+    max-height: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HEADER / DRAG HANDLE
+═══════════════════════════════════════════════════════════════ */
+#glim-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--s1);
+  border-radius: var(--r) var(--r) 0 0;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+#glim-sidebar.dragging #glim-header { cursor: grabbing; }
+
+.glim-logo {
+  width: 32px; height: 32px;
+  background: var(--grad);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 12px rgba(59,130,246,.25);
+}
+.glim-brand  { flex: 1; min-width: 0; }
+.glim-name   { display: block; font-size: 14px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+.glim-status { font-size: 10px; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; transition: color .2s; line-height: 1; }
+.glim-status.listening { color: var(--blue); }
+.glim-status.processing { color: var(--amber); }
+.glim-status.speaking   { color: var(--violet); }
+.glim-status.error      { color: var(--red); }
+
+.glim-hbtns { display: flex; gap: 2px; }
+.glim-hbtn {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  border: none; background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+  flex-shrink: 0;
+}
+.glim-hbtn:hover  { background: var(--s3); color: var(--text2); }
+.glim-hbtn.active { background: var(--bg-b); color: var(--blue); }
+.glim-close-x:hover { background: rgba(248,113,113,.12); color: var(--red); }
+
+/* ═══════════════════════════════════════════════════════════════
+   VIEWS (chat / settings)
+═══════════════════════════════════════════════════════════════ */
+.glim-view {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Chat view ─────────────────────────────────────────────── */
+.glim-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex; flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
+}
+.glim-messages::-webkit-scrollbar       { width: 4px; }
+.glim-messages::-webkit-scrollbar-track { background: transparent; }
+.glim-messages::-webkit-scrollbar-thumb { background: var(--s4); border-radius: 2px; }
+
+/* Empty / welcome state */
+.glim-empty {
+  display: flex; flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 24px;
+  gap: 14px;
+  min-height: 100%;
+  justify-content: center;
+}
+.glim-empty-glow {
+  width: 68px; height: 68px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 10px rgba(59,130,246,.04);
+}
+.glim-empty-title { font-size: 18px; font-weight: 700; letter-spacing: -.03em; }
+.glim-empty-desc  { font-size: 13px; color: var(--text2); line-height: 1.65; max-width: 250px; }
+.glim-chips  { display: flex; flex-direction: column; gap: 7px; width: 100%; max-width: 285px; }
+.glim-chip {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 12.5px; color: var(--text2);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+  transition: all .15s;
+}
+.glim-chip:hover { background: var(--s3); border-color: var(--blue); color: var(--blue); }
+
+/* ── Message bubbles ───────────────────────────────────────── */
+.glim-msg {
+  display: flex; flex-direction: column;
+  gap: 4px;
+  animation: glim-in .2s ease;
+}
+.glim-msg.user      { align-items: flex-end; }
+.glim-msg.assistant { align-items: flex-start; }
+@keyframes glim-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+
+.glim-bubble {
+  padding: 9px 13px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  word-break: break-word;
+  max-width: 92%;
+}
+.glim-msg.user .glim-bubble {
+  background: var(--grad);
+  color: #fff;
+  border-bottom-right-radius: 3px;
+}
+.glim-msg.assistant .glim-bubble {
+  background: var(--bubble-bg, var(--s2));   /* --bubble-bg set by colour picker */
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 3px;
+}
+.glim-msg.error .glim-bubble {
+  background: rgba(248,113,113,.07);
+  border: 1px solid rgba(248,113,113,.22);
+  color: var(--red);
+}
+
+.glim-msg-meta {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 3px;
+}
+.glim-ts { font-size: 10.5px; color: var(--text3); }
+.glim-copy-btn {
+  font-size: 10.5px; color: var(--text3);
+  background: none; border: none;
+  cursor: pointer; padding: 2px 7px;
+  border-radius: 4px;
+  font-family: var(--font);
+  transition: background .15s, color .15s;
+}
+.glim-copy-btn:hover { background: var(--s3); color: var(--text2); }
+.glim-copy-btn.copied { color: var(--green); }
+
+/* Markdown in bubbles */
+.glim-bubble strong { font-weight: 600; }
+.glim-bubble em     { font-style: italic; }
+.glim-bubble code   { font-family: var(--mono); font-size: 11.5px; background: var(--s3); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--bord2); }
+.glim-msg.user .glim-bubble code { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.2); }
+.glim-bubble pre    { background: #030510; border: 1px solid var(--border); border-radius: 9px; padding: 12px; overflow-x: auto; margin: 6px 0; font-family: var(--mono); font-size: 12px; line-height: 1.6; }
+.glim-bubble pre code { background: none; border: none; padding: 0; color: #e2e8f4; }
+.glim-bubble ul, .glim-bubble ol { padding-left: 18px; margin: 4px 0; }
+.glim-bubble li { margin: 2px 0; }
+.glim-bubble h1, .glim-bubble h2, .glim-bubble h3 { font-weight: 700; margin: 8px 0 3px; line-height: 1.3; }
+.glim-bubble h1 { font-size: 15px } .glim-bubble h2 { font-size: 14px } .glim-bubble h3 { font-size: 13.5px }
+.glim-bubble p  { margin: 4px 0; }
+.glim-bubble p:first-child { margin-top: 0 }
+.glim-bubble p:last-child  { margin-bottom: 0 }
+.glim-bubble a  { color: var(--blue); }
+.glim-msg.user .glim-bubble a { color: #bfdbfe; }
+
+/* Screenshot thumbnail in chat */
+.glim-shot-wrap  { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; animation: glim-in .2s ease; }
+.glim-shot-frame { border-radius: 9px; overflow: hidden; border: 1px solid rgba(59,130,246,.2); max-width: 220px; box-shadow: 0 2px 12px rgba(0,0,0,.4); }
+.glim-shot-frame img { display: block; width: 100%; max-height: 130px; object-fit: cover; object-position: top; }
+.glim-shot-label { display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--text3); padding: 0 1px; }
+.glim-shot-dot   { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(52,211,153,.15); flex-shrink: 0; }
+
+/* File chip in chat */
+.glim-file-chip  { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; animation: glim-in .2s ease; }
+.glim-img-frame  { border-radius: 10px; overflow: hidden; max-width: 210px; border: 1px solid rgba(59,130,246,.2); box-shadow: 0 2px 12px rgba(0,0,0,.4); }
+.glim-img-frame img { display: block; width: 100%; max-height: 160px; object-fit: cover; }
+.glim-doc-chip   { display: flex; align-items: center; gap: 9px; background: var(--s2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 12px; max-width: 210px; }
+.glim-doc-ico    { color: var(--blue); flex-shrink: 0; }
+.glim-doc-name   { font-size: 12px; color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* System message */
+.glim-sys { text-align: center; font-size: 11.5px; color: var(--text3); padding: 2px; line-height: 1.6; animation: glim-in .2s ease; }
+
+/* Loading dots */
+.glim-dots { display: flex; gap: 5px; padding: 10px 14px; background: var(--s2); border: 1px solid var(--border); border-radius: 14px; border-bottom-left-radius: 3px; width: fit-content; }
+.glim-dots span { width: 5px; height: 5px; background: var(--text3); border-radius: 50%; animation: glim-dot 1.4s infinite ease-in-out; }
+.glim-dots span:nth-child(2) { animation-delay: .2s }
+.glim-dots span:nth-child(3) { animation-delay: .4s }
+@keyframes glim-dot { 0%,80%,100% { transform: scale(.55); opacity: .35 } 40% { transform: scale(1); opacity: 1 } }
+
+/* ── Settings view ─────────────────────────────────────────── */
+.glim-settings-inner {
+  flex: 1;
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+  align-items: center;
+  padding: 28px 22px;
+  gap: 16px;
+}
+.glim-settings-inner::-webkit-scrollbar       { width: 4px; }
+.glim-settings-inner::-webkit-scrollbar-track { background: transparent; }
+.glim-settings-inner::-webkit-scrollbar-thumb { background: var(--s4); border-radius: 2px; }
+
+.glim-settings-logo {
+  width: 66px; height: 66px;
+  background: var(--grad);
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 24px rgba(59,130,246,.28), 0 0 0 10px rgba(59,130,246,.05);
+}
+.glim-settings-title { font-size: 19px; font-weight: 700; letter-spacing: -.03em; }
+
+.glim-settings-status {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 9px; padding: 10px 13px;
+  font-size: 12.5px; color: var(--text2); width: 100%;
+}
+.glim-sdot       { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); flex-shrink: 0; transition: background .3s; }
+.glim-sdot.ok    { background: var(--green); }
+.glim-sdot.error { background: var(--red); }
+
+.glim-field { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+.glim-label { font-size: 11px; font-weight: 600; color: var(--text2); letter-spacing: .06em; text-transform: uppercase; }
+.glim-input-wrap { position: relative; }
+.glim-text-input {
+  width: 100%; padding: 10px 36px 10px 12px;
+  background: var(--s2); border: 1.5px solid var(--border);
+  border-radius: 9px; font-size: 13px; color: var(--text);
+  outline: none; transition: border-color .15s; font-family: var(--font);
+}
+.glim-text-input:focus       { border-color: var(--blue); }
+.glim-text-input::placeholder { color: var(--text3); }
+.glim-eye-btn {
+  position: absolute; right: 9px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--text3); display: flex; align-items: center;
+  padding: 0; transition: color .15s;
+}
+.glim-eye-btn:hover { color: var(--text2); }
+
+/* Toggle switch */
+.glim-toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; width: 100%; padding: 4px 0;
+}
+.glim-toggle-label { font-size: 13px; color: var(--text); font-weight: 500; }
+.glim-toggle-hint  { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.glim-switch {
+  width: 40px; height: 22px;
+  border-radius: 11px;
+  background: var(--s4); border: none;
+  cursor: pointer;
+  position: relative; flex-shrink: 0;
+  transition: background .2s;
+}
+.glim-switch::after {
+  content: '';
+  position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px;
+  border-radius: 50%; background: var(--text3);
+  transition: transform .2s, background .2s;
+}
+.glim-switch[aria-checked="true"]        { background: var(--blue); }
+.glim-switch[aria-checked="true"]::after { transform: translateX(18px); background: #fff; }
+
+.glim-save-btn {
+  width: 100%; padding: 11px;
+  background: var(--grad); color: #fff;
+  border: none; border-radius: 9px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: opacity .15s, transform .1s; font-family: var(--font);
+}
+.glim-save-btn:hover  { opacity: .88; }
+.glim-save-btn:active { transform: scale(.98); }
+
+.glim-key-link { font-size: 12px; color: var(--blue); text-decoration: none; }
+.glim-key-link:hover { text-decoration: underline; }
+
+.glim-divider  { width: 100%; height: 1px; background: var(--border); }
+
+.glim-danger-btn {
+  background: none;
+  border: 1px solid rgba(248,113,113,.28);
+  border-radius: 8px;
+  color: var(--red); font-size: 12.5px;
+  cursor: pointer; font-family: var(--font);
+  padding: 8px 18px;
+  transition: background .15s, border-color .15s;
+}
+.glim-danger-btn:hover { background: rgba(248,113,113,.07); border-color: rgba(248,113,113,.5); }
+
+/* ═══════════════════════════════════════════════════════════════
+   INPUT AREA
+═══════════════════════════════════════════════════════════════ */
+.glim-input-area {
+  border-top: 1px solid var(--border);
+  padding: 10px 12px 13px;
+  flex-shrink: 0;
+  background: var(--s1);
+  border-radius: 0 0 var(--r) var(--r);
+}
+
+.glim-api-warn {
+  background: rgba(251,191,36,.06);
+  border: 1px solid rgba(251,191,36,.24);
+  border-radius: 8px;
+  padding: 8px 11px; margin-bottom: 9px;
+  font-size: 11.5px; color: var(--amber); line-height: 1.5;
+  font-family: var(--font);
+}
+.glim-api-warn button {
+  background: none; border: none; color: var(--blue);
+  cursor: pointer; font-size: inherit; font-family: inherit;
+  text-decoration: underline; padding: 0;
+}
+
+.glim-file-preview {
+  position: relative; margin-bottom: 9px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 9px; overflow: hidden;
+}
+.glim-preview-img { width: 100%; max-height: 100px; object-fit: cover; object-position: top; display: block; }
+.glim-preview-doc { display: flex; align-items: center; gap: 9px; padding: 10px 12px; }
+.glim-preview-doc-icon { color: var(--blue); flex-shrink: 0; }
+.glim-preview-doc-name { font-size: 12.5px; color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.glim-preview-lbl { display: block; font-size: 10px; color: var(--text3); padding: 3px 9px 5px; }
+.glim-preview-rm {
+  position: absolute; top: 5px; right: 5px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(0,0,0,.6); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; transition: background .15s;
+}
+.glim-preview-rm:hover { background: rgba(0,0,0,.85); }
+
+.glim-row {
+  display: flex; align-items: flex-end; gap: 4px;
+  background: var(--s2); border: 1.5px solid var(--border);
+  border-radius: 11px; padding: 6px 6px 6px 7px;
+  transition: border-color .15s;
+}
+.glim-row:focus-within { border-color: var(--blue); }
+
+.glim-ibtn {
+  width: 30px; height: 30px;
+  border-radius: 7px; border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; background: transparent; color: var(--text3);
+  transition: background .15s, color .15s, transform .1s;
+}
+.glim-ibtn:hover  { background: var(--s3); color: var(--text2); }
+.glim-ibtn.active { color: var(--blue); background: var(--bg-b); }
+.glim-ibtn:active { transform: scale(.9); }
+.glim-ibtn.recording {
+  color: #fff; background: var(--violet);
+  animation: glim-mic .9s infinite alternate;
+}
+@keyframes glim-mic {
+  from { box-shadow: 0 0 0 0 rgba(124,58,237,.6) }
+  to   { box-shadow: 0 0 0 5px rgba(124,58,237,0) }
+}
+
+.glim-textarea {
+  flex: 1; border: none; background: transparent;
+  font-size: 13px; color: var(--text); line-height: 1.55;
+  resize: none; outline: none;
+  min-height: 20px; max-height: 120px;
+  font-family: var(--font); padding: 5px 2px;
+}
+.glim-textarea::placeholder { color: var(--text3); }
+
+.glim-send {
+  width: 30px; height: 30px;
+  border-radius: 7px; border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; background: var(--grad); color: #fff;
+  transition: opacity .15s, transform .1s;
+}
+.glim-send:hover:not(:disabled)  { opacity: .85; }
+.glim-send:active:not(:disabled) { transform: scale(.9); }
+.glim-send:disabled { background: var(--s3); color: var(--text3); cursor: default; }
+
+.glim-hint-text { font-size: 10px; color: var(--text3); text-align: center; margin-top: 7px; }
+
+/* ── Utility ───────────────────────────────────────────────── */
+[hidden] { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   MIC BUTTON — VOICE STATES
+═══════════════════════════════════════════════════════════════ */
+
+/* Override the old violet .recording with proper named states */
+.glim-ibtn.recording { color: #fff; background: var(--violet); }
+
+/* LISTENING — green pulsing ring */
+.glim-ibtn.listening {
+  color: #fff;
+  background: #16a34a;
+  animation: glim-mic-listen 1s infinite alternate;
+}
+@keyframes glim-mic-listen {
+  from { box-shadow: 0 0 0 0   rgba(34,197,94,.8), 0 0 0 0 rgba(34,197,94,.0) }
+  to   { box-shadow: 0 0 0 4px rgba(34,197,94,.0), 0 0 0 8px rgba(34,197,94,.0) }
+}
+
+/* ERROR — static red */
+.glim-ibtn.error {
+  color: var(--red);
+  background: rgba(248,113,113,.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIVE TRANSCRIPT STRIP
+═══════════════════════════════════════════════════════════════ */
+.glim-transcript {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 11px;
+  margin-bottom: 8px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  animation: glim-in .15s ease;
+}
+.glim-transcript.final  { border-color: rgba(34,197,94,.35); }
+.glim-transcript.error  { border-color: rgba(248,113,113,.35); background: rgba(248,113,113,.05); }
+
+.glim-transcript-text {
+  flex: 1;
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.45;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.glim-transcript.final .glim-transcript-text { color: var(--green); font-style: normal; }
+.glim-transcript.error .glim-transcript-text { color: var(--red);   font-style: normal; }
+
+.glim-retry-btn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid rgba(248,113,113,.35);
+  border-radius: 6px;
+  color: var(--red);
+  font-size: 11px;
+  font-family: var(--font);
+  cursor: pointer;
+  padding: 3px 9px;
+  transition: background .15s, border-color .15s;
+  white-space: nowrap;
+}
+.glim-retry-btn:hover { background: rgba(248,113,113,.1); border-color: var(--red); }
+
+/* ═══════════════════════════════════════════════════════════════
+   VOICE STYLE CARDS
+═══════════════════════════════════════════════════════════════ */
+.glim-voice-section { width: 100%; }
+
+.glim-voice-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+
+.glim-voice-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--s2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  text-align: left;
+  outline: none;
+}
+.glim-voice-card:hover   { border-color: var(--bord2); background: var(--s3); }
+.glim-voice-card.selected {
+  border-color: var(--blue);
+  background: rgba(59,130,246,.08);
+}
+.glim-voice-card:focus-visible { box-shadow: 0 0 0 2px rgba(59,130,246,.4); }
+
+.glim-vc-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+  line-height: 1;
+}
+.glim-vc-body  { flex: 1; min-width: 0; }
+.glim-vc-name  { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; }
+.glim-vc-desc  { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.glim-voice-card.selected .glim-vc-name { color: var(--blue); }
+.glim-voice-card.selected .glim-vc-desc { color: var(--text2); }
+
+.glim-vc-preview {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--s3);
+  color: var(--text2);
+  font-size: 9px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.glim-vc-preview:hover {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GENDER TABS  (Female / Male)
+═══════════════════════════════════════════════════════════════ */
+.glim-gender-tabs {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  margin-bottom: 10px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.glim-gender-tab {
+  flex: 1;
+  padding: 7px 0;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text3);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  letter-spacing: .02em;
+}
+.glim-gender-tab:hover { background: var(--s3); color: var(--text2); }
+.glim-gender-tab.active {
+  background: var(--grad);
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCENT LIST ROWS
+═══════════════════════════════════════════════════════════════ */
+.glim-accent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.glim-accent-loading {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text3);
+  padding: 14px 0;
+  font-style: italic;
+}
+
+/* Base row */
+.glim-accent-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--s2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  position: relative;
+  outline: none;
+}
+.glim-accent-item:hover:not(.unavailable) {
+  border-color: var(--bord2);
+  background: var(--s3);
+}
+.glim-accent-item.selected {
+  border-color: var(--blue);
+  background: rgba(59,130,246,.08);
+}
+.glim-accent-item.unavailable {
+  cursor: default;
+  opacity: .55;
+}
+
+/* Flag emoji */
+.glim-accent-flag {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 26px;
+  text-align: center;
+}
+
+/* Info block */
+.glim-accent-info  { flex: 1; min-width: 0; }
+.glim-accent-label { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; }
+.glim-accent-vname {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.glim-accent-vname.na { font-style: italic; }
+.glim-accent-item.selected .glim-accent-label { color: var(--blue); }
+.glim-accent-item.selected .glim-accent-vname { color: var(--text2); }
+
+/* Preview button */
+.glim-accent-preview {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--s3);
+  color: var(--text2);
+  font-size: 9px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.glim-accent-preview:hover {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+
+/* Check mark (visible only when selected) */
+.glim-accent-check {
+  font-size: 11px;
+  color: var(--blue);
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity .15s;
+  flex-shrink: 0;
+}
+.glim-accent-item.selected .glim-accent-check { opacity: 1; }
+
+/* Download hint for unavailable voices */
+.glim-accent-dl {
+  position: absolute;
+  right: 10px;
+  font-size: 9.5px;
+  color: var(--text3);
+  text-align: right;
+  line-height: 1.35;
+  max-width: 120px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SOUND WAVE  — shown in header while Glim is speaking
+═══════════════════════════════════════════════════════════════ */
+.glim-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1px;
+}
+
+.glim-wave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 12px;
+}
+.glim-wave span {
+  display: block;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--blue);
+  animation: glim-wave-bar 1s ease-in-out infinite;
+}
+.glim-wave span:nth-child(1) { height: 4px;  animation-delay: 0s;    }
+.glim-wave span:nth-child(2) { height: 8px;  animation-delay: .1s;   }
+.glim-wave span:nth-child(3) { height: 12px; animation-delay: .2s;   }
+.glim-wave span:nth-child(4) { height: 8px;  animation-delay: .3s;   }
+.glim-wave span:nth-child(5) { height: 4px;  animation-delay: .4s;   }
+
+@keyframes glim-wave-bar {
+  0%, 100% { transform: scaleY(.4); opacity: .5; }
+  50%       { transform: scaleY(1);  opacity: 1;  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SETTINGS SECTIONS
+═══════════════════════════════════════════════════════════════ */
+.glim-settings-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.glim-section-hd {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.glim-optional {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--text3);
+  background: var(--s3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  letter-spacing: .04em;
+  text-transform: none;
+}
+
+.glim-section-hint {
+  font-size: 11.5px;
+  color: var(--text3);
+  line-height: 1.5;
+  margin-top: -4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ELEVENLABS VOICE CARDS
+═══════════════════════════════════════════════════════════════ */
+.glim-el-voices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.glim-el-group { display: flex; flex-direction: column; gap: 5px; }
+
+.glim-el-group-hd {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text3);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 0 2px;
+  margin-bottom: 2px;
+}
+
+.glim-el-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  background: var(--s2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  outline: none;
+}
+.glim-el-card:hover   { border-color: var(--bord2); background: var(--s3); }
+.glim-el-card.selected {
+  border-color: var(--blue);
+  background: rgba(59,130,246,.08);
+}
+.glim-el-card:focus-visible { box-shadow: 0 0 0 2px rgba(59,130,246,.4); }
+
+.glim-el-card-body  { flex: 1; min-width: 0; }
+.glim-el-card-name  {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.glim-el-card-desc  {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.glim-el-card.selected .glim-el-card-name { color: var(--blue); }
+.glim-el-card.selected .glim-el-card-desc { color: var(--text2); }
+
+.glim-el-preview {
+  flex-shrink: 0;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--s3);
+  color: var(--text2);
+  font-size: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.glim-el-preview:hover {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+
+.glim-el-check {
+  font-size: 11px;
+  color: var(--blue);
+  font-weight: 700;
+  opacity: 0;
+  flex-shrink: 0;
+  transition: opacity .15s;
+}
+.glim-el-card.selected .glim-el-check { opacity: 1; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREENSHOT CROP + ANNOTATE OVERLAY
+═══════════════════════════════════════════════════════════════ */
+
+/* Full-viewport overlay inside Shadow DOM */
+#glim-crop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: auto;
+  overflow: hidden;
+  font-family: var(--font);
+  /* background shows through the screenshot image beneath */
+  background: #000;
+}
+
+/* Screenshot — stretched to exactly fill the viewport */
+#glim-crop-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: fill;   /* fill precisely — screenshot pixel ↔ CSS pixel */
+  pointer-events: none;
+  user-select: none;
+  display: block;
+}
+
+/* Canvas — sits on top for vignette / handles / annotations */
+#glim-crop-canvas {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+
+/* ── Phase hint (top-centre pill) ── */
+.glim-crop-hint {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(7,9,26,.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(59,130,246,.3);
+  border-radius: 24px;
+  padding: 7px 20px;
+  font-size: 12.5px;
+  color: #c8d5ee;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 20;
+  letter-spacing: .01em;
+}
+.glim-crop-hint strong { color: #fff; font-weight: 600; }
+
+/* ── Annotation toolbar (floats above bottom bar) ── */
+.glim-annot-bar {
+  position: absolute;
+  bottom: 78px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(7,9,26,.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(59,130,246,.22);
+  border-radius: 14px;
+  padding: 8px 13px;
+  z-index: 20;
+  pointer-events: auto;
+  animation: glim-in .18s ease;
+}
+.glim-annot-label {
+  font-size: 10.5px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+.glim-annot-btn {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  border: 1.5px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.04);
+  color: var(--text2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, border-color .15s;
+  flex-shrink: 0;
+}
+.glim-annot-btn:hover  {
+  background: rgba(255,255,255,.11);
+  border-color: rgba(255,255,255,.2);
+}
+.glim-annot-btn.active {
+  background: rgba(59,130,246,.2);
+  border-color: rgba(59,130,246,.55);
+}
+.glim-annot-sep {
+  width: 1px; height: 22px;
+  background: rgba(255,255,255,.1);
+  margin: 0 3px;
+  flex-shrink: 0;
+}
+
+/* ── Bottom action bar ── */
+.glim-crop-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  background: rgba(7,9,26,.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(59,130,246,.13);
+  z-index: 20;
+  pointer-events: auto;
+}
+
+/* Right-aligned button cluster */
+.glim-cbtn-group {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Button base */
+.glim-cbtn {
+  padding: 9px 17px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background .15s, opacity .15s, transform .1s, border-color .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.glim-cbtn:active { transform: scale(.97); }
+
+.glim-cbtn-ghost {
+  background: transparent;
+  border-color: rgba(255,255,255,.14);
+  color: var(--text2);
+}
+.glim-cbtn-ghost:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.24); }
+
+.glim-cbtn-dim {
+  background: rgba(255,255,255,.07);
+  border-color: rgba(255,255,255,.12);
+  color: var(--text);
+}
+.glim-cbtn-dim:hover { background: rgba(255,255,255,.13); border-color: rgba(255,255,255,.2); }
+
+.glim-cbtn-primary {
+  background: var(--blue);
+  color: #fff;
+  border-color: transparent;
+  font-weight: 600;
+}
+.glim-cbtn-primary:hover:not(:disabled) { opacity: .88; }
+.glim-cbtn-primary:disabled {
+  background: var(--s4);
+  color: var(--text3);
+  cursor: default;
+  transform: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   THEME PICKER CARDS
+═══════════════════════════════════════════════════════════════ */
+.glim-theme-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.glim-theme-card {
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+  font-family: var(--font);
+  transition: border-color .15s, transform .12s;
+  outline: none;
+}
+.glim-theme-card:hover        { transform: translateY(-2px); border-color: var(--bord2); }
+.glim-theme-card.selected     { border-color: var(--blue); }
+.glim-theme-card:focus-visible { box-shadow: 0 0 0 2px rgba(59,130,246,.45); }
+
+/* Colour preview: solid background with accent gradient strip */
+.glim-tp-bg {
+  height: 46px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.glim-tp-accent {
+  height: 7px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* Name label */
+.glim-theme-name {
+  font-size: 10px;
+  font-weight: 500;
+  text-align: center;
+  padding: 5px 4px;
+  background: var(--s2);
+  color: var(--text2);
+  line-height: 1.25;
+  border-top: 1px solid var(--border);
+  transition: color .15s;
+}
+.glim-theme-card.selected .glim-theme-name { color: var(--blue); }
+
+/* ═══════════════════════════════════════════════════════════════
+   COLOUR PICKERS
+═══════════════════════════════════════════════════════════════ */
+.glim-color-pickers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.glim-cpick-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  transition: border-color .15s;
+}
+.glim-cpick-row:focus-within { border-color: var(--blue); }
+
+.glim-cpick-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text2);
+}
+
+.glim-cpick-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Hex value readout */
+.glim-cpick-hex {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text3);
+  letter-spacing: .04em;
+  min-width: 54px;
+  text-align: right;
+  transition: color .15s;
+}
+.glim-cpick-row:focus-within .glim-cpick-hex { color: var(--text2); }
+
+/* The colour input itself — styled as a clickable swatch square */
+.glim-cpick-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 34px;
+  height: 26px;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1.5px rgba(255,255,255,.1);
+  transition: box-shadow .15s, transform .1s;
+}
+.glim-cpick-input:hover  { box-shadow: 0 0 0 1.5px rgba(255,255,255,.3); transform: scale(1.08); }
+.glim-cpick-input:focus  { box-shadow: 0 0 0 2px var(--blue); }
+/* Chrome: strip the inner padding/border from the swatch */
+.glim-cpick-input::-webkit-color-swatch-wrapper { padding: 0; }
+.glim-cpick-input::-webkit-color-swatch         { border: none; border-radius: 6px; }
+
+/* Reset button */
+.glim-color-reset-btn {
+  width: 100%;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  letter-spacing: .01em;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.glim-color-reset-btn:hover {
+  background: var(--s3);
+  border-color: var(--bord2);
+  color: var(--text2);
+}

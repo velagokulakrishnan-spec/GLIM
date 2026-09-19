@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Local tool config (may contain machine-specific paths / permissions)
+.claude/
+.vscode/
+
+# Secrets — never commit API keys
+.env
+.env.*
+*.key
+secrets.json
+
+# Dependencies / build output
+node_modules/
+dist/
+build/
+*.zip

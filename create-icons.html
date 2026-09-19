@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Glim — Icon Generator</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px;
+      background: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    h1 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 6px; }
+    p  { font-size: 14px; color: #64748b; text-align: center; max-width: 380px; line-height: 1.6; }
+    .previews {
+      display: flex;
+      gap: 24px;
+      align-items: flex-end;
+      margin: 32px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .preview-item { text-align: center; }
+    .preview-item canvas { display: block; border-radius: 22%; box-shadow: 0 2px 12px rgba(0,0,0,.1); }
+    .preview-item span { display: block; font-size: 12px; color: #94a3b8; margin-top: 8px; font-weight: 500; }
+    button {
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+      font-family: inherit;
+    }
+    button:hover { background: #0284c7; }
+    .steps {
+      margin-top: 32px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px 24px;
+      max-width: 400px;
+      width: 100%;
+    }
+    .steps h2 { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .05em; }
+    .steps ol { padding-left: 18px; }
+    .steps li { font-size: 13px; color: #64748b; line-height: 1.7; }
+    .steps code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>Glim Icon Generator</h1>
+  <p>Generates all required PNG icon sizes for the Chrome extension. Click download and place the files in your <code style="background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:13px;font-family:monospace">icons/</code> folder.</p>
+
+  <div class="previews" id="previews"></div>
+
+  <button onclick="downloadAll()">Download All 4 Icons</button>
+
+  <div class="steps">
+    <h2>Next steps</h2>
+    <ol>
+      <li>Click <strong>Download All 4 Icons</strong> above.</li>
+      <li>Move the downloaded files into the <code>icons/</code> folder.</li>
+      <li>Open Chrome → <code>chrome://extensions</code></li>
+      <li>Enable <strong>Developer mode</strong> (top-right toggle).</li>
+      <li>Click <strong>Load unpacked</strong> → select the <code>GLIM APP</code> folder.</li>
+      <li>Enter your Anthropic API key via the toolbar popup.</li>
+    </ol>
+  </div>
+
+  <script>
+    const SIZES = [16, 32, 48, 128];
+    const SKY   = '#0ea5e9';
+
+    function drawIcon(size) {
+      const canvas = document.createElement('canvas');
+      canvas.width  = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Rounded-rect background
+      const radius = size * 0.21;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, size, size, radius);
+      ctx.fillStyle = SKY;
+      ctx.fill();
+
+      // 4-pointed sparkle star (white)
+      const cx     = size / 2;
+      const cy     = size / 2;
+      const outer  = size * 0.33;
+      const inner  = size * 0.115;
+      const points = 4;
+
+      ctx.beginPath();
+      for (let i = 0; i < points * 2; i++) {
+        const angle = (i * Math.PI) / points - Math.PI / 2;
+        const r     = i % 2 === 0 ? outer : inner;
+        const x     = cx + r * Math.cos(angle);
+        const y     = cy + r * Math.sin(angle);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+
+      return canvas;
+    }
+
+    // Render previews
+    const previewsEl = document.getElementById('previews');
+    SIZES.forEach(size => {
+      const src     = drawIcon(size);
+      const display = document.createElement('canvas');
+      const dSize   = Math.max(size, 64);
+      display.width  = dSize;
+      display.height = dSize;
+      display.getContext('2d').drawImage(src, 0, 0, dSize, dSize);
+      display.style.borderRadius = '22%';
+      display.style.width  = dSize + 'px';
+      display.style.height = dSize + 'px';
+
+      const label = document.createElement('span');
+      label.textContent = `${size}×${size}`;
+
+      const item = document.createElement('div');
+      item.className = 'preview-item';
+      item.appendChild(display);
+      item.appendChild(label);
+      previewsEl.appendChild(item);
+    });
+
+    function downloadAll() {
+      SIZES.forEach((size, i) => {
+        setTimeout(() => {
+          const canvas = drawIcon(size);
+          const a = document.createElement('a');
+          a.download = `icon${size}.png`;
+          a.href     = canvas.toDataURL('image/png');
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, i * 250);
+      });
+    }
+  </script>
+</body>
+</html>
